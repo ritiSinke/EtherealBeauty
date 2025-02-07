@@ -1,6 +1,10 @@
 const express = require("express");
 const Product = require("./products.model");
 const router = express.Router();
+const multer = require('multer');
+const path = require("path");
+
+
 
 // Set up multer storage
 const storage = multer.diskStorage({
@@ -89,7 +93,7 @@ router.post("/create-vendor-product", upload.single("image"), async (req, res) =
       price: req.body.price,
       category: req.body.category,
       skin_type_suitability: req.body.skin_type_suitability,
-      brandname: req.body.brand,
+      brand: req.body.brand,
       stock: req.body.stock,
       image: imageUrl, // Store the image URL in the database
       vendor_id: vendor_id, // Set vendor_id from session
