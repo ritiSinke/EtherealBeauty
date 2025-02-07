@@ -40,7 +40,7 @@ app.use('/uploads/products', express.static(path.join(__dirname, 'uploads')));
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes); //this is the baseurl for products
 app.use("/api/skin", skinTest); // Linking the skinTest API route
-app.use("/api/payment", paymentRoutes); // Linking the skinTest API route
+app.use("/api/payment", paymentRoutes); // Linking the payment
 
 
 
