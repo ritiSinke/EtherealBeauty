@@ -43,7 +43,9 @@ const EditProduct = () => {
 
         // Construct the image preview URL from the filename if available
         if (product.image) {
-          setPreview(`${getBaseUrl()}/uploads/${product.image}`);
+          const imgurl= `${getBaseUrl()}${product.image}`;
+          setPreview(`${getBaseUrl()}${product.image}`);
+          console.log(imgurl);
         }
       } catch (error) {
         console.error('Error fetching product details:', error);
