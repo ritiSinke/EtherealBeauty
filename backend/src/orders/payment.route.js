@@ -3,41 +3,54 @@ const express = require("express");
 const router = express.Router();
 const Order = require("./orders.model"); // Keep this to fetch order details
 const Payment = require("./payment.model");
+
 router.post("/initialize-khalti", async (req, res) => {
   try {
     const { orderId, website_url } = req.body;
+    console.log("🔄 Received Khalti Payment Request:", { orderId, website_url });
+
     if (!orderId) {
       return res.status(400).json({ success: false, message: "Order ID is required" });
     }
 
     // Fetch order details
     const orderData = await Order.findOne({ where: { order_id: orderId } });
+    console.log("✅ Order Data:", orderData);
 
     if (!orderData) {
       return res.status(400).json({ success: false, message: "Order not found" });
     }
 
-    // Convert price to paisa (multiply by 100)
+    // Convert price to paisa
     const amount = Math.round(Number(orderData.total_price) * 100);
+    console.log("💰 Amount in paisa:", amount);
 
-    // Initialize Khalti payment
+    // Call Khalti API
     const paymentInitate = await initializeKhaltiPayment({
       amount,
       purchase_order_id: orderData.order_id,
       purchase_order_name: `Order #${orderData.order_id}`,
-      return_url: `${process.env.BACKEND_URI}/api/payment/complete-khalti-payment`,
+      return_url: `${process.env.FRONTEND_URI}/payment-success`, // Corrected path
       website_url,
     });
 
-    // Store payment details in the database
+    console.log("✅ Khalti API Response:", paymentInitate);
+
+    if (!paymentInitate.pidx || !paymentInitate.payment_url) {
+      return res.status(400).json({ success: false, message: "Khalti API failed", paymentInitate });
+    }
+
+    // Store payment in DB
     const newPayment = await Payment.create({
       order_id: orderData.order_id,
       customer_id: orderData.customer_id,
-      amount: orderData.total_price, // Store in rupees, not paisa
-      transaction_id: null, // Will be updated after verification
-      pidx: paymentInitate.pidx, // Store Pidx
+      amount: orderData.total_price,
+      transaction_id: null,
+      pidx: paymentInitate.pidx,
       payment_status: "pending",
     });
+
+    console.log("✅ Payment Record Stored:", newPayment);
 
     res.json({
       success: true,
@@ -47,10 +60,12 @@ router.post("/initialize-khalti", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error initializing Khalti payment:", error);
+    console.error("❌ Error initializing Khalti payment:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+
 router.post("/verify-khalti", async (req, res) => {
   try {
     const { pidx } = req.body;
