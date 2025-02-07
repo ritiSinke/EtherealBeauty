@@ -76,9 +76,9 @@ const Vendor = sequelize.define(
 );
 
 // Sync the table
-(async () => {
-  await sequelize.sync({ alter: true });
-  console.log("Vendors table synced!");
-})();
+// (async () => {
+//   await sequelize.sync({ alter: true });
+//   console.log("Vendors table synced!");
+// })();
 
 module.exports = Vendor;
