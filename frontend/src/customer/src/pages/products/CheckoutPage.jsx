@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getBaseUrl } from "../../utils/baseURL";
 import { useCreateOrderMutation } from "../../redux/features/orders/orderApi";
-
+import paymentApi from "../../redux/features/orders/paymentApi"
 import AddressSelector from "./AddressSelector";
 
 const Checkout = () => {
@@ -23,10 +23,11 @@ const [orderPlaced, setOrderPlaced] = useState(false);
     window.scrollTo(0, 0);
   }, []);
 
-
   const handlePlaceOrder = async () => {
+    console.log("➡️ handlePlaceOrder triggered!");
+  
     const orderData = {
-      customer_id : 1,
+      customer_id: 1,
       total_price: grandTotal,
       payment_method,
       address: {
@@ -35,37 +36,62 @@ const [orderPlaced, setOrderPlaced] = useState(false);
         municipality,
         additionalInfo,
       },
-      products: products.map(product => ({
-        id: product.product_id, // Use product.product_id instead of destructuring
+      products: products.map((product) => ({
+        id: product.product_id,
         name: product.name,
-        quantity: product.quantity || 1, // Ensure quantity exists
+        quantity: product.quantity || 1,
         price: product.price,
-      }))
-     
+      })),
     };
-console.log("products",products);
-    console.log("Order Data Sent to API:", orderData); // Debugging line
+  
+    console.log("📝 Order Data Sent to API:", orderData);
+  
     try {
-      const { data } = await createOrder(orderData).unwrap();
-      if (data) {
-        if ( payment_method === "Esewa") {
-          window.location.href = `https://esewa.com.np/epay/main?amt=${grandTotal}&pid=${data.orderId}&scd=your_esewa_merchant_code&su=your_success_url&fu=your_failure_url`;
-        } else if ( payment_method === "Khalti") {
-          window.location.href = `https://khalti.com/api/v2/payment/initiate/?return_url=your_return_url&purchase_order_id=${data.orderId}&amount=${grandTotal * 100}&website_url=your_website_url&purchase_order_name=Order-${data.orderId}`;
-        } else {
-          setOrderPlaced(true);
-          setTimeout(() => {
-            setOrderPlaced(false);
-            navigate("/orders");
-          }, 2000);
-        }
-        console.log("Order Response:", response);
-        alert("Order placed successfully!");
+      const response = await createOrder(orderData); // ✅ Send order request
+      console.log("🔄 Raw API Response:", response);
+  
+      if (response.error) {
+        console.error("❌ API Error:", response.error);
+        return;
       }
+  
+      const data = response.data; // ✅ Extract response data
+      console.log("✅ Order Response:", data);
+  
+      // 🔍 **Fix: Extract correct `order_id`**
+      if (!data || !data.order?.order_id) {
+        console.error("❌ Order ID missing in response:", data);
+        return;
+      }
+  
+      const orderId = data.order.order_id; // ✅ Corrected order ID extraction
+      console.log("🔄 Proceeding with payment, Order ID:", orderId);
+  
+      console.log("🔄 Checking Payment Method:", payment_method);
+  
+      if (payment_method === "Khalti") {
+        console.log("🚀 Calling Khalti Payment API...");
+        await paymentApi.initializeKhaltiPayment(orderId, window.location.origin);
+      } else if (payment_method === "Esewa") {
+        console.log("🔄 Redirecting to eSewa...");
+        window.location.href = `https://esewa.com.np/epay/main?amt=${grandTotal}&pid=${orderId}&scd=your_esewa_merchant_code&su=your_success_url&fu=your_failure_url`;
+      } else {
+        console.log("💰 Cash on Delivery Selected");
+        setOrderPlaced(true);
+        setTimeout(() => {
+          setOrderPlaced(false);
+          navigate("/orders");
+        }, 2000);
+      }
+  
+      // alert("Order placed successfully!");
     } catch (error) {
-      console.error("Error placing order:", error);
+      console.error("❌ Error placing order:", error);
     }
   };
+  
+  
+  
   return (
   <div className="bg-primary-light  rounded text-base px-6 py-4 space-y-5 mb-12">
       <h2 className="text-xl text-text-dark">Checkout</h2>

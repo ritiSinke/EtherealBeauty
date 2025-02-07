@@ -1,22 +1,17 @@
-import { Outlet } from 'react-router-dom'
-import './App.css'
-
+import { Outlet } from 'react-router-dom';
+import './App.css';
 import Navbar from './components/navbar';
 import Footer from './components/Footer';
-// In index.js or App.js
-
+import { NotificationProvider } from './components/NotificationProvider'; // Import the NotificationProvider
 
 function App() {
-
   return (
-    <>
-  <Navbar/>
-  <Outlet/>
-  <Footer/>
-
-      
-    </>
-  )
+    <NotificationProvider> {/* Wrap everything inside NotificationProvider */}
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </NotificationProvider>
+  );
 }
 
-export default App
+export default App;

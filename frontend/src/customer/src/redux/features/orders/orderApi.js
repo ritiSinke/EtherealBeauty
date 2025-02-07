@@ -36,6 +36,14 @@ const orderApi = createApi({
       }),
       invalidatesTags: ["Order"],
     }),
+    getCustomerOrders: builder.query({
+      query: (customerId) => ({
+        url: `/customer/${customerId}`,
+        method: "GET",
+      }),
+      providesTags: ["Order"],
+    }),
+    
   }),
 });
 
@@ -43,6 +51,7 @@ export const {
   useGetAllOrdersQuery,
   useGetOrderByIdQuery,
   useCreateOrderMutation,
+  useGetCustomerOrdersQuery,
 } = orderApi;
 
 export default orderApi;
