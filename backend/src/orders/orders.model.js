@@ -52,7 +52,7 @@ const Order = sequelize.define(
 
 // Sync the table
 // (async () => {
-//   await sequelize.sync({ alter: false });
+//   await sequelize.sync({ alter: true });
 //   console.log("Orders table synced!");
 // })();
 

@@ -2,6 +2,7 @@ const express = require("express");
 const Product = require("./products.model");
 const router = express.Router();
 const multer = require('multer');
+const path = require('path');
 
 
 // Set up multer storage
@@ -78,9 +79,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch product" });
   }
 });
-
-
-
 
 
 

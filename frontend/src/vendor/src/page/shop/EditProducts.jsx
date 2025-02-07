@@ -15,21 +15,21 @@ const EditProduct = () => {
     skin_type_suitability: '',
     brand: '',
     stock: '',
-    image: '',  // Image filename from the database
+    image: '',  // Image filename from DB
   });
 
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [preview, setPreview] = useState(null);  // For image preview
+  const [imageName, setImageName] = useState(''); // To hold the filename for display
+  const [existingImage, setExistingImage] = useState(''); // For storing existing image filename
 
   // Fetch the product data on component mount
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`${getBaseUrl()}/api/products/${id}`);
-        console.log(response.data);  // Log the response to inspect it
-
-        const product = response.data;  // Directly access product data
+        const product = response.data;
         setProductData({
           name: product.name,
           description: product.description,
@@ -38,14 +38,14 @@ const EditProduct = () => {
           skin_type_suitability: product.skin_type_suitability,
           brand: product.brand,
           stock: product.stock,
-          image: product.image || '',  // Save image filename from DB
+          image: '',  // Don't set image here directly
         });
 
-        // Construct the image preview URL from the filename if available
+        // If product has an image, set the filename and preview URL
         if (product.image) {
-          const imgurl= `${getBaseUrl()}${product.image}`;
-          setPreview(`${getBaseUrl()}${product.image}`);
-          console.log(imgurl);
+          setPreview(`${getBaseUrl()}${product.image}`); // Set preview image URL
+          setExistingImage(product.image); // Store the existing image filename
+          setImageName(product.image); // Display the filename of the existing image
         }
       } catch (error) {
         console.error('Error fetching product details:', error);
@@ -76,6 +76,10 @@ const EditProduct = () => {
         image: file,  // Set image file for upload
       });
       setPreview(URL.createObjectURL(file));  // Preview the new image
+      setImageName(file.name);  // Display the selected file name
+    } else {
+      setImageName('');  // Reset image name if no file selected
+      setPreview(null);  // Reset preview if no file selected
     }
   };
 
@@ -87,7 +91,11 @@ const EditProduct = () => {
     // Create FormData object for the API request
     const formData = new FormData();
     Object.keys(productData).forEach((key) => {
-      formData.append(key, productData[key]);
+      if (key === 'image' && !productData.image && existingImage) {
+        formData.append('image', existingImage);  // Keep the existing image if no new image is selected
+      } else {
+        formData.append(key, productData[key]);
+      }
     });
 
     try {
@@ -204,21 +212,26 @@ const EditProduct = () => {
 
         <div className="space-y-2">
           <label className="block text-lg font-semibold">Image</label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleImageChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+
+          <div className="w-full relative">
+            <input
+              type="file"
+              name="image"
+              onChange={handleImageChange}
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 opacity-0 absolute top-0 left-0 z-10"
+            />
+            <div className="p-3 border border-gray-300 rounded-md cursor-pointer">
+              {/* Always show "Choose a file" as label, and display selected file name if available */}
+              <p className="text-gray-500">
+                {imageName || existingImage ? `Choose a file: ${imageName || existingImage}` : 'Choose a file: No file chosen'}
+              </p>
+            </div>
+          </div>
+
+          {/* If a new image is selected, show the preview */}
           {preview && (
             <div className="mt-2">
-              <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded mt-2 border border-gray-300 shadow-sm" />
-            </div>
-          )}
-          {/* Show image from DB if no new image is selected */}
-          {productData.image && !preview && (
-            <div className="mt-2">
-              <img src={`${getBaseUrl()}/uploads/${productData.image}`} alt="Existing Product" className="w-24 h-24 object-cover rounded mt-2 border border-gray-300 shadow-sm" />
+              <img src={preview} alt="Preview" className="w-24 h-24 object-cover rounded mt-2" />
             </div>
           )}
         </div>
