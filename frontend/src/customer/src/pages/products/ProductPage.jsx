@@ -14,6 +14,7 @@ const filters = {
     { label: "$200 and above", min: 200, max: Infinity },
   ],
 };
+
 const ProductPage = () => {
   const [filtersState, setFiltersState] = useState({
     category: "all",
