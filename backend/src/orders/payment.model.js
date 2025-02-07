@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/db.config"); // Sequelize instance
-const Order = require("./order.model");
+const Order = require("./orders.model");
 const Customer = require("../users/customer/customer.model");
 
 const Payment = sequelize.define(
@@ -33,6 +33,14 @@ const Payment = sequelize.define(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
+    // amount: { type: Number, required: true },
+    // dataFromVerificationReq: { type: Object },
+    // apiQueryFromUser: { type: Object },
+    // paymentGateway: {
+    //   type: String,
+    //   enum: ["khalti", "esewa", "connectIps"],
+    //   required: true,
+    // },
     transaction_id: {
       type: DataTypes.STRING,
       unique: true,
@@ -46,17 +54,18 @@ const Payment = sequelize.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    pidx: { type: String, unique: true },
+    pidx: { type: String, 
+      unique: false },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
 // Sync the table
-(async () => {
-  await sequelize.sync({ alter: true });
-  console.log("Payments table synced!");
-})();
+// (async () => {
+//   await sequelize.sync({ alter: true });
+//   console.log("Payments table synced!");
+// })();
 
 module.exports = Payment;

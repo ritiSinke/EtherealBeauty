@@ -59,9 +59,9 @@ const OrderItem = sequelize.define(
 );
 
 // Sync the table
-(async () => {
-  await sequelize.sync({ alter: true });
-  console.log("OrderItems table synced!");
-})();
+// (async () => {
+//   await sequelize.sync({ alter: true });
+//   console.log("OrderItems table synced!");
+// })();
 
 module.exports = OrderItem;

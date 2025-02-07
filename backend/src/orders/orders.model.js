@@ -51,9 +51,9 @@ const Order = sequelize.define(
 );
 
 // Sync the table
-(async () => {
-  await sequelize.sync({ alter: false });
-  console.log("Orders table synced!");
-})();
+// (async () => {
+//   await sequelize.sync({ alter: false });
+//   console.log("Orders table synced!");
+// })();
 
 module.exports = Order;

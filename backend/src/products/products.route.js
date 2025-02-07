@@ -1,11 +1,13 @@
 const express = require("express");
 const Product = require("./products.model");
 const router = express.Router();
+const multer = require('multer');
+
 
 // Set up multer storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Save uploaded files in the "uploads" folder
+    cb(null, "uploads/products/"); // Save uploaded files in the "uploads" folder
   },
   filename: function (req, file, cb) {
     cb(
@@ -17,7 +19,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
+// ✅ Get all products
+router.get("/allProducts", async (req, res) => {
+  try {
+    const products = await Product.findAll();
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: "Failed to fetch products" });
+  }
+});
 // Fetch all products (with vendor_id = 1)
 router.get('/display_vendor_products', async (req, res) => {
   try {
@@ -80,7 +91,7 @@ router.post("/create-vendor-product", upload.single("image"), async (req, res) =
     const vendor_id = "1"; // Replace with the actual vendor ID if needed
 
 
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null; // Get the file path
+    const imageUrl = req.file ? `/uploads/products/${req.file.filename}` : null; // Get the file path
 
     // Create a new product with vendor_id
     const newProduct = await Product.create({
@@ -89,7 +100,7 @@ router.post("/create-vendor-product", upload.single("image"), async (req, res) =
       price: req.body.price,
       category: req.body.category,
       skin_type_suitability: req.body.skin_type_suitability,
-      brandname: req.body.brand,
+      brand: req.body.brand,
       stock: req.body.stock,
       image: imageUrl, // Store the image URL in the database
       vendor_id: vendor_id, // Set vendor_id from session
@@ -119,7 +130,7 @@ router.post("/create-product", async (req, res) => {
 
 router.patch("/update-product/:id", upload.single('image'), async (req, res) => {
   try {
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.image;
+    const imageUrl = req.file ? `/uploads/products/${req.file.filename}` : req.body.image;
 
     const updatedProduct = await Product.update(
       {
@@ -149,16 +160,6 @@ router.patch("/update-product/:id", upload.single('image'), async (req, res) => 
   }
 });
 
-// Get all products
-router.get("/", async (req, res) => {
-  try {
-    const products = await Product.findAll();
-    res.status(200).json(products);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    res.status(500).json({ message: "Failed to fetch products" });
-  }
-});
 
 // ✅ Get a single product by ID
 router.get("/:id", async (req, res) => {
