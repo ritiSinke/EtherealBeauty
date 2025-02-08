@@ -33,7 +33,7 @@ const paymentRoutes = require("./src/orders/payment.route");
 const skinTest = require("./src/skinDetection/skinTest");
 
 
-app.use('/uploads/products', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 
 // Routes setup

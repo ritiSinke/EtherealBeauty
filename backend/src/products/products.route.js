@@ -3,6 +3,7 @@ const Product = require("./products.model");
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const { Op } = require("sequelize");
 
 
 // Set up multer storage
@@ -21,15 +22,48 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // ✅ Get all products
+// router.get("/allProducts", async (req, res) => {
+//   try {
+//     const products = await Product.findAll();
+//     res.status(200).json(products);
+//   } catch (error) {
+//     console.error("Error fetching products:", error);
+//     res.status(500).json({ message: "Failed to fetch products" });
+//   }
+// });
 router.get("/allProducts", async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const { category, brand, skinType, minPrice, maxPrice } = req.query;
+
+    let whereClause = {};
+
+    if (category) whereClause.category = category;
+    if (brand) whereClause.brand = brand;
+    if (skinType) whereClause.skin_type_suitability = skinType;
+
+    // Ensure price filters are valid numbers
+    const min = parseFloat(minPrice) || 0; // Default minPrice to 0
+    const max = parseFloat(maxPrice); 
+
+    if (!isNaN(min) && !isNaN(max) && max !== Infinity) {
+      whereClause.price = { [Op.between]: [min, max] };
+    } else if (!isNaN(min)) {
+      whereClause.price = { [Op.gte]: min };
+    } else if (!isNaN(max) && max !== Infinity) {
+      whereClause.price = { [Op.lte]: max };
+    }
+
+    const products = await Product.findAll({ where: whereClause });
+
     res.status(200).json(products);
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Error fetching filtered products:", error);
     res.status(500).json({ message: "Failed to fetch products" });
   }
 });
+
+
+
 // Fetch all products (with vendor_id = 1)
 router.get('/display_vendor_products', async (req, res) => {
   try {
@@ -65,21 +99,6 @@ router.get("/total-vendor-products", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch total products" });
   }
 });
-
-// Get a single product by ID
-router.get("/:id", async (req, res) => {
-  try {
-    const product = await Product.findByPk(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    res.status(200).json(product);
-  } catch (error) {
-    console.error("Error fetching product:", error);
-    res.status(500).json({ message: "Failed to fetch product" });
-  }
-});
-
 
 
 // Create a product (updated to use vendor_id from session)
@@ -159,6 +178,7 @@ router.patch("/update-product/:id", upload.single('image'), async (req, res) => 
 });
 
 
+
 // ✅ Get a single product by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -232,5 +252,7 @@ router.get("/related/:category", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch related products" });
   }
 });
+
+
 
 module.exports = router;
