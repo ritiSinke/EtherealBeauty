@@ -13,6 +13,7 @@ import Register from '../components/Register';
 import Checkout from '../pages/products/CheckoutPage';
 import PaymentSuccess from '../pages/orders/PaymentSuccess';
 import ViewOrders from '../pages/orders/ViewOrders';
+import AqiPage from '../pages/aqi/AqiPage';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
         {path:"/checkout", element:<Checkout/>},
         {path:"/payment-success", element:<PaymentSuccess/> },
         {path:"/orders", element:<ViewOrders/>},
+        {path:"/aqi", element:<AqiPage/>},
 
  
     ]
