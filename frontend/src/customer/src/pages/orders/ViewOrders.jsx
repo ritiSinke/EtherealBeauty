@@ -52,14 +52,14 @@ const ViewOrders = () => {
               {order.status || "Pending"}
             </span>
           </p>
-          <p className="text-gray-700 mt-2"><strong>Total Amount:</strong> <span className="text-lg font-medium text-pink-400">${order.total_price}</span></p>
+          <p className="text-gray-700 mt-2"><strong>Total Amount:</strong> <span className="text-lg font-medium text-pink-400">NPR {order.total_price}</span></p>
           <p className="text-gray-700 mt-2"><strong>Payment Method:</strong> {order.payment_method}</p>
           <h4 className="mt-4 font-semibold text-pink-700 text-lg">Ordered Items:</h4>
           <ul className="mt-3 space-y-2">
             {order.orderItems?.map((item) => (
               <li key={item.order_item_id} className="ml-4 pl-2 border-l-4 border-pink-300 text-gray-700">
                 <span className="text-lg font-medium text-pink-400">{item.quantity}x</span> {getProductName(item.product_id)} - 
-                <span className="font-semibold text-gray-900"> ${item.subtotal}</span>
+                <span className="font-semibold text-gray-900"> NPR {item.subtotal}</span>
               </li>
             ))}
           </ul>

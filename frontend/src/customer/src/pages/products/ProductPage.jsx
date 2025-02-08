@@ -4,7 +4,7 @@ import ProductFiltering from "./ProductFiltering";
 import { useFetchFilteredProductsQuery } from "../../redux/features/products/productsApi";
 
 const filters = {
-  categories: ["all", "facewash", "moisturizer", "sunscreen", "toner", "lip balm", "serum"],
+  categories: ["all", "facewash", "moisturizer", "sunscreen", "toner", "lipbalm", "serum"],
   brands: ["all", "dermaco", "cetaphil", "aqualogica", "mamaearth"],
   skinTypes: ["all", "dry", "oily", "normal"],
   priceRanges: [
