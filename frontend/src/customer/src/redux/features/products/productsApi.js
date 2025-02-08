@@ -39,6 +39,25 @@ const productsApi = createApi({
     fetchRelatedProducts: builder.query({
       query: (category) => `/related/${category}`,
     }),
+    fetchFilteredProducts: builder.query({
+      query: (filters) => {
+        // Ensure minPrice and maxPrice are included properly
+        const params = new URLSearchParams();
+    
+        if (filters.category) params.append("category", filters.category);
+        if (filters.brand) params.append("brand", filters.brand);
+        if (filters.skinType) params.append("skinType", filters.skinType);
+        if (filters.minPrice) params.append("minPrice", filters.minPrice);
+        if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
+        if (filters.limit) params.append("limit", filters.limit);
+        if (filters.page) params.append("page", filters.page);
+    
+        return `/allProducts?${params.toString()}`;
+      },
+      providesTags: ["Products"],
+    }),
+    
+    
   }),
 });
 
@@ -48,6 +67,8 @@ export const {
   useFetchProductsByBrandQuery,
   useFetchProductsBySkinTypeQuery,
   useFetchRelatedProductsQuery,
+  useFetchFilteredProductsQuery,
+
 } = productsApi;
 
 export default productsApi;

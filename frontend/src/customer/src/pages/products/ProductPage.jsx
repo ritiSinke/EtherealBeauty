@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ProductCards from "./ProductCards";
-import ProductFiltering from "./ProductFiltering"; 
-import { useFetchAllProductsQuery } from "../../redux/features/products/productsApi";
+import ProductFiltering from "./ProductFiltering";
+import { useFetchFilteredProductsQuery } from "../../redux/features/products/productsApi";
 
 const filters = {
-  categories: ["all", "skincare", "makeup", "bodycare", "haircare", "fragrance"],
-  brands: ["all", "Brand A", "Brand B", "Brand C", "Brand D"],
-  skinTypes: ["all", "dry", "oily", "combination", "sensitive"],
+  categories: ["all", "facewash", "moisturizer", "sunscreen", "toner", "lip balm", "serum"],
+  brands: ["all", "dermaco", "cetaphil", "aqualogica", "mamaearth"],
+  skinTypes: ["all", "dry", "oily", "normal"],
   priceRanges: [
-    { label: "Under $50", min: 0, max: 50 },
-    { label: "$50 - $100", min: 50, max: 100 },
-    { label: "$100 - $200", min: 100, max: 200 },
-    { label: "$200 and above", min: 200, max: Infinity },
+    { label: "All", min: "", max: "" },
+    { label: "Under 500", min: 0, max: 500 },
+    { label: "500 - 1000", min: 500, max: 1000 },
+    { label: "1000 - 2000", min: 1000, max: 2000 },
+    { label: "2000 and above", min: 2000, max: 999999 },
   ],
 };
 
@@ -20,33 +21,35 @@ const ProductPage = () => {
     category: "all",
     brand: "all",
     skinType: "all",
-    priceRange: "",
+    priceRange: "All",
   });
-
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(8);
+  const [productsPerPage] = useState(20);
 
   const { category, brand, skinType, priceRange } = filtersState;
-  const [minPrice, maxPrice] = priceRange.split("-").map(Number);
+  const selectedPrice = filters.priceRanges.find((p) => p.label === priceRange) || {};
+  const minPriceValue = selectedPrice.min !== "" ? Number(selectedPrice.min) : 0; 
+  const maxPriceValue = selectedPrice.max !== "" ? Number(selectedPrice.max) : Infinity;
 
-  const { data = [], error, isLoading } = useFetchAllProductsQuery({
+  const { data, error, isLoading, refetch } = useFetchFilteredProductsQuery({
     category: category !== "all" ? category : "",
     brand: brand !== "all" ? brand : "",
     skinType: skinType !== "all" ? skinType : "",
-    minPrice: isNaN(minPrice) ? "" : minPrice,
-    maxPrice: isNaN(maxPrice) ? "" : maxPrice,
-    page: currentPage,
-    limit: productsPerPage,
+    minPrice: minPriceValue,
+    maxPrice: maxPriceValue,
   });
 
-  // If your API returns an array of products, you don't need the `products` destructuring anymore
-  const products = data;
-  const totalPages = Math.ceil(data.length / productsPerPage);  // You can calculate totalPages based on the length of `data` if needed
-  const totalProducts = data.length;
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filtersState]);
 
-  // Debugging logs
-  console.log("Products:", products);
-  console.log("Total Pages:", totalPages);
+  const products = Array.isArray(data) ? data : data?.products || [];
+  const totalProducts = products.length;
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const displayedProducts = products.slice(startIndex, endIndex);
 
   const clearFilters = () => {
     setFiltersState({
@@ -55,6 +58,13 @@ const ProductPage = () => {
       skinType: "all",
       priceRange: "",
     });
+  };
+
+  const handleFilterChange = (name, value) => {
+    setFiltersState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handlePageChange = (pageNumber) => {
@@ -71,9 +81,6 @@ const ProductPage = () => {
     return <div>Error loading products.</div>;
   }
 
-  const startProduct = (currentPage - 1) * productsPerPage + 1;
-  const endProduct = startProduct + products.length - 1;
-
   return (
     <>
       <section className="section__container bg-primary-light">
@@ -85,22 +92,20 @@ const ProductPage = () => {
 
       <section className="section__container">
         <div className="flex flex-col md:flex-row md:gap-12 gap-8">
-          {/* Filtering section */}
           <ProductFiltering
             filters={filters}
             filtersState={filtersState}
-            setFiltersState={setFiltersState}
+            handleFilterChange={handleFilterChange}
             clearFilters={clearFilters}
           />
 
-          {/* Products display section */}
           <div>
             <h3 className="text-xl font-medium mb-4">
               {totalProducts > 0
-                ? `Showing ${startProduct} to ${endProduct} of ${totalProducts} products.`
+                ? `Showing ${startIndex + 1} to ${Math.min(endIndex, totalProducts)} of ${totalProducts} products.`
                 : "No products available."}
             </h3>
-            <ProductCards products={products} />
+            <ProductCards products={displayedProducts} />
 
             <div className="mt-6 flex justify-center">
               <button
@@ -137,6 +142,5 @@ const ProductPage = () => {
     </>
   );
 };
-
 
 export default ProductPage;

@@ -42,6 +42,6 @@ const router = createBrowserRouter([
   }
   
 ]);
-console.log("Routes Loaded:", router.routes);
+// console.log("Routes Loaded:", router.routes);
 
 export default router;

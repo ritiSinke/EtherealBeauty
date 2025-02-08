@@ -17,7 +17,7 @@ const ProductCards = ({ products }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {products.map((product, index) => {
           // Define productImageUrl inside the map function correctly
-          const productImageUrl = `${getBaseUrl()}${product?.image?.replace("products/", "")}`;
+          const productImageUrl = `${getBaseUrl()}${product?.image}`;
 
           return (
             <div key={index} className="product__card">
@@ -45,7 +45,7 @@ const ProductCards = ({ products }) => {
               {/* Product description */}
               <div className="product__card_content">
                 <h4>{product.name}</h4>
-                <p>{product.price}</p>
+                <p className=" text-primary"> NPR {product.price}</p>
               </div>
             </div>
           );

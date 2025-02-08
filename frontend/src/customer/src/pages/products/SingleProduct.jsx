@@ -56,7 +56,7 @@ const SingleProduct = () => {
           <div className="md:w-1/2 w-full">
             <h3 className="text-2xl font-semibold mb-4">{product?.name}</h3>
             <p className="text-xl text-primary mb-4">
-              ${product?.price}
+              NPR {product?.price}
             </p>
             <p className="text-gray-400 mb-4">{product?.description}</p>
 
