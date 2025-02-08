@@ -1,4 +1,4 @@
-// import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useFetchAllProductsQuery } from "../../redux/features/products/productsApi";
 import ProductCards from "../products/ProductCards";
@@ -54,12 +54,12 @@ const Search = () => {
 
   return (
     <>
-      <section className="section__container bg-primary-light ">
+      <section className="section__container bg-primary-light">
         <h2 className="section__header capitalize">Search Products</h2>
       </section>
 
       <section className="section__container">
-        <div className="w-full mb-8 flex flex-col md:flex-row items-center justify-center gap-4">
+        <div className="w-full mb-12 flex flex-col md:flex-row items-center justify-center gap-4">
           <input
             type="text"
             value={searchQuery}
@@ -77,7 +77,7 @@ const Search = () => {
         </div>
       </section>
 
-      <div className="section__container mt-0">
+      <div className="section__container">
         {isLoading ? (
           <p>Loading products...</p>
         ) : error ? (
