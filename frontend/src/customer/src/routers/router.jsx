@@ -11,7 +11,9 @@ import WebcamCapture from '../pages/home/WebcamCapture';
 import Login from '../components/Login';
 import Register from '../components/Register';
 import Checkout from '../pages/products/CheckoutPage';
-
+import PaymentSuccess from '../pages/orders/PaymentSuccess';
+import ViewOrders from '../pages/orders/ViewOrders';
+import AqiPage from '../pages/aqi/AqiPage';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +27,10 @@ const router = createBrowserRouter([
         {path:"/product", element:<ProductPage/>},
         {path:"/product/:id", element:<SingleProduct/>},
         {path:"/checkout", element:<Checkout/>},
+        {path:"/payment-success", element:<PaymentSuccess/> },
+        {path:"/orders", element:<ViewOrders/>},
+        {path:"/aqi", element:<AqiPage/>},
+
  
     ]
   },
@@ -36,6 +42,8 @@ const router = createBrowserRouter([
     path: "/register",
     element:<Register/>
   }
+  
 ]);
+// console.log("Routes Loaded:", router.routes);
 
 export default router;

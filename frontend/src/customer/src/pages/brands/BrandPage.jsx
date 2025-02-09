@@ -1,35 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import products from "../../data/products.json";
-import ProductCards from "../products/ProductCards"
-
+import { useFetchProductsByBrandQuery } from "../../redux/features/products/productsApi";
+import ProductCards from "../products/ProductCards";
 
 const BrandPage = () => {
   const { brandName } = useParams();
-  const [filteredBrands, setFilteredBrands] = useState([]);
+  const { data: products, isLoading, isError } = useFetchProductsByBrandQuery(brandName);
 
-  useEffect(() => {
-    const filtered = products.filter(
-      (product) => product.brand.toLowerCase() === brandName.toLowerCase()
-    );
-    setFilteredBrands(filtered);
-  }, [brandName]);
-  
-  useEffect(() => {
-   window.scrollTo(0,0);
-  })
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-  return <>
-  <section className="section__container bg-primary-light">
-    <h2 className="section__header capitalize">{brandName}</h2>
-  </section>
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error fetching products for {brandName}</p>;
 
-  {/* products card */}
-  <div className="section__container">
-<ProductCards products={filteredBrands}/>
-</div>
+  return (
+    <>
+      <section className="section__container bg-primary-light">
+        <h2 className="section__header capitalize">{brandName}</h2>
+      </section>
 
-  </>;
+      {/* Product Cards */}
+      <div className="section__container">
+        <ProductCards products={products || []} />
+      </div>
+    </>
+  );
 };
 
 export default BrandPage;

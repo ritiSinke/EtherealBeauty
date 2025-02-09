@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/db.config"); // Import Sequelize instance
 const Customer = require("../users/customer/customer.model"); // Assuming Customer model exists
+const OrderItem = require("../orders/orderItems.model");
 
 // Define the Order model
 const Order = sequelize.define(
@@ -49,6 +50,8 @@ const Order = sequelize.define(
     tableName: "Orders",
   }
 );
+Order.hasMany(OrderItem, { foreignKey: "order_id", as: "orderItems" });
+OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 
 // Sync the table
 // (async () => {

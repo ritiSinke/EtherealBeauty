@@ -1,16 +1,11 @@
 import React from "react";
 
-const ProductFiltering = ({
-  filters,
-  filtersState,
-  setFiltersState,
-  clearFilters,
-}) => {
+const ProductFiltering = ({ filters, filtersState, handleFilterChange, clearFilters }) => {
   return (
     <div className="space-y-5 flex-shrink-0">
-      <h3 className="font-bold text-xl">Filters</h3>
+      <h3>Filters</h3>
 
-      {/* Category Filter */}
+      {/* Categories */}
       <div className="flex flex-col space-y-2">
         <h4 className="font-medium text-lg">Category</h4>
         <hr />
@@ -18,19 +13,17 @@ const ProductFiltering = ({
           <label key={category} className="capitalize cursor-pointer">
             <input
               type="radio"
-              name="category"
+              name="category" // Keep name consistent for radios
               value={category}
               checked={filtersState.category === category}
-              onChange={(e) =>
-                setFiltersState({ ...filtersState, category: e.target.value })
-              }
+              onChange={(e) => handleFilterChange("category", e.target.value)}
             />
-            <span className="ml-2">{category}</span>
+            <span className="ml-1">{category}</span>
           </label>
         ))}
       </div>
 
-      {/* Brand Filter */}
+      {/* Brands */}
       <div className="flex flex-col space-y-2">
         <h4 className="font-medium text-lg">Brand</h4>
         <hr />
@@ -38,65 +31,54 @@ const ProductFiltering = ({
           <label key={brand} className="capitalize cursor-pointer">
             <input
               type="radio"
-              name="brand"
+              name="brand" // Keep name consistent
               value={brand}
               checked={filtersState.brand === brand}
-              onChange={(e) =>
-                setFiltersState({ ...filtersState, brand: e.target.value })
-              }
+              onChange={(e) => handleFilterChange("brand", e.target.value)}
             />
-            <span className="ml-2">{brand}</span>
+            <span className="ml-1">{brand}</span>
           </label>
         ))}
       </div>
 
-      {/* Skin Type Filter */}
+      {/* Skin Type */}
       <div className="flex flex-col space-y-2">
         <h4 className="font-medium text-lg">Skin Type</h4>
         <hr />
-        {filters.skinTypes.map((skinType) => (
-          <label key={skinType} className="capitalize cursor-pointer">
+        {filters.skinTypes.map((type) => (
+          <label key={type} className="capitalize cursor-pointer">
             <input
               type="radio"
               name="skinType"
-              value={skinType}
-              checked={filtersState.skinType === skinType}
-              onChange={(e) =>
-                setFiltersState({ ...filtersState, skinType: e.target.value })
-              }
+              value={type}
+              checked={filtersState.skinType === type}
+              onChange={(e) => handleFilterChange("skinType", e.target.value)}
             />
-            <span className="ml-2">{skinType}</span>
+            <span className="ml-1">{type}</span>
           </label>
         ))}
       </div>
 
-      {/* Price Range Filter */}
+      {/* Price Ranges */}
       <div className="flex flex-col space-y-2">
         <h4 className="font-medium text-lg">Price Range</h4>
         <hr />
         {filters.priceRanges.map((range) => (
-          <label key={range.label} className="capitalize cursor-pointer">
-            <input
-              type="radio"
-              name="priceRange"
-              value={`${range.min}-${range.max}`}
-              checked={
-                filtersState.priceRange === `${range.min}-${range.max}`
-              }
-              onChange={(e) =>
-                setFiltersState({ ...filtersState, priceRange: e.target.value })
-              }
-            />
-            <span className="ml-2">{range.label}</span>
-          </label>
-        ))}
+  <label key={range.label} className="capitalize cursor-pointer">
+    <input
+      type="radio"
+      name="priceRange"
+      value={range.label} // Store label instead of "min-max"
+      checked={filtersState.priceRange === range.label}
+      onChange={(e) => handleFilterChange("priceRange", e.target.value)}
+    />
+    <span className="ml-1">{range.label}</span>
+  </label>
+))}
+
       </div>
 
-      {/* Clear Filters Button */}
-      <button
-        onClick={clearFilters}
-        className="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-600"
-      >
+      <button onClick={clearFilters} className="bg-primary py-1 px-4 text-white rounded">
         Clear All Filters
       </button>
     </div>
