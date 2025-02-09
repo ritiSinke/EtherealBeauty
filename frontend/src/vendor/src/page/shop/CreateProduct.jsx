@@ -87,12 +87,11 @@ const CreateProduct = () => {
           skin_type_suitability: '',
           image: null,
           brand: '',
-          stock: '',  // Reset stock
+          stock: '', 
         });
         setPreview(null); // Clear the preview
 
-        // Hide the success message after 5 seconds
-        setTimeout(() => setMessage(''), 5000);
+        setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage(data.message || 'Error creating product!');
       }

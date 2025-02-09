@@ -87,15 +87,15 @@ const Checkout = () => {
         municipality,
         additionalInfo,
       },
-      products : products.map(({ id, name, quantity, price }) => ({
-        id: parseInt(id, 10),
-        name,
-        quantity,
-        price,
-      })),
+      products: products.map(product => ({
+        id: product.product_id, // Use product.product_id instead of destructuring
+        name: product.name,
+        quantity: product.quantity || 1, // Ensure quantity exists
+        price: product.price,
+      }))
      
     };
-
+console.log("products",products);
     console.log("Order Data Sent to API:", orderData); // Debugging line
     try {
       const { data } = await createOrder(orderData).unwrap();

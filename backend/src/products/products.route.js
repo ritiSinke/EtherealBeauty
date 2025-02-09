@@ -2,7 +2,8 @@ const express = require("express");
 const Product = require("./products.model");
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
+const path = require("path");
+
 
 
 // Set up multer storage
@@ -160,7 +161,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Get single product
+// ✅ Get a single product by ID
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
@@ -169,8 +170,8 @@ router.get("/:id", async (req, res) => {
     }
     res.status(200).json(product);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ message: 'Error fetching products' });
+    console.error("Error fetching product:", error);
+    res.status(500).json({ message: "Failed to fetch product" });
   }
 });
 

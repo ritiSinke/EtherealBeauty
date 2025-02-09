@@ -23,12 +23,12 @@ router.post(
     body("address.district").notEmpty().withMessage("District is required"),
     body("address.municipality").notEmpty().withMessage("Municipality is required"),
     body("address.additionalInfo").optional().isString(),
-  //   body("products").isArray({ min: 1 }).withMessage("At least one product is required"),
-  //   body("products.*.id").isInt().withMessage("Product ID must be an integer"),
-  //   body("products.*.name").isString().withMessage("Product name must be a string"),
-  //   body("products.*.quantity").isInt({ min: 1 }).withMessage("Quantity must be at least 1"),
-  //   body("products.*.price").isFloat({ min: 0.01 }).withMessage("Price must be valid"),
-  // 
+    body("products").isArray({ min: 1 }).withMessage("At least one product is required"),
+    body("products.*.id").isInt().withMessage("Product ID must be an integer"),
+    body("products.*.name").isString().withMessage("Product name must be a string"),
+    body("products.*.quantity").isInt({ min: 1 }).withMessage("Quantity must be at least 1"),
+    body("products.*.price").isFloat({ min: 0.01 }).withMessage("Price must be valid"),
+  
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -46,6 +46,8 @@ router.post(
         payment_method,
         address: JSON.stringify(address), // Store address as JSON
       });
+      console.log("New Order Created:", newOrder.dataValues); // Debugging line
+      
 
       // Step 2: Insert products into OrderItem
       const orderItems = products.map(({ id, quantity, price }) => ({
@@ -55,14 +57,26 @@ router.post(
         quantity,
         subtotal: quantity * price,
       }));
-
-      await OrderItem.bulkCreate(orderItems); // Insert all items in one go
+      console.log("Order Items to be inserted:", orderItems); 
+      try {
+        console.log("Attempting to insert order items...");
+        await OrderItem.bulkCreate(orderItems);
+        console.log("Order items inserted successfully!");
+      } catch (error) {
+        console.error("Error inserting order items:", error);
+        if (error.errors) {
+          error.errors.forEach((err) => console.error(err.message));
+        }
+      
+      }
 
       res.status(201).json({ message: "Order placed successfully", order: newOrder });
     } catch (error) {
       console.error("error",error);
       res.status(500).json({ error: error.message });
     }
+   
+    
   }
 );
 
@@ -81,17 +95,17 @@ router.get("/test", (req, res) => {
 });
 
 // Get a single order by ID
-router.get("/:id", authenticate, async (req, res) => {
-  try {
-    const order = await Order.findByPk(req.params.id);
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
-    }
-    res.json(order);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// router.get("/:id", authenticate, async (req, res) => {
+//   try {
+//     const order = await Order.findByPk(req.params.id);
+//     if (!order) {
+//       return res.status(404).json({ error: "Order not found" });
+//     }
+//     res.json(order);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 router.get("/:id", authenticate, async (req, res) => {
   console.log("Fetching order with ID:", req.params.id);

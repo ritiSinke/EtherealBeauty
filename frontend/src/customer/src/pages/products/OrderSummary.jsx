@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { clearCart } from "../../redux/features/cart/cartSlice";
 // import { loadStripe } from "@stripe/stripe-js"; // Commenting out Stripe
 import { getBaseUrl } from "../../utils/baseURL";
 import { useNavigate } from "react-router-dom"; // Assuming you use react-router-dom for navigation
