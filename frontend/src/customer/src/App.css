@@ -195,6 +195,13 @@ nav {
   color: var(--text-dark);
 }
 
+.myh2 {
+  font-size: 4rem;
+  font-weight: 600;
+  font-family: var(--header-font);
+  color: var(--text-dark);
+}
+
 .header__content p {
   margin-bottom: 2rem;
   color: var(--text-light);
@@ -350,7 +357,6 @@ nav {
 .deals__image img {
   position: absolute;
   left: 50%;
-  bottom: -5rem;
   transform: translateX(-50%);
   max-width: 550px;
 }

@@ -3,18 +3,20 @@ import { Link, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useFetchProductByIdQuery } from "../../redux/features/products/productsApi";
 import { addToCart } from "../../redux/features/cart/cartSlice";
-
+import { getBaseUrl } from "../../utils/baseURL";
 const SingleProduct = () => {
   const { id } = useParams();
   console.log("Product ID:", id); 
   const dispatch = useDispatch();
   const { data, error, isLoading } = useFetchProductByIdQuery(id);
 
-
   console.log("Product ID:", id); // Debugging log
   console.log("Fetched Product:", data); // Debugging log
   // Directly use `data` as the product object
   const product = data;
+  const productImageUrl = `${getBaseUrl()}${product?.image}`;
+  console.log(productImageUrl);
+
 
   const handleAddToCart = (product) => {
     dispatch(addToCart(product));
@@ -45,7 +47,7 @@ const SingleProduct = () => {
         <div className="flex flex-col items-center md:flex-row gap-8">
           <div className="md:w-1/2 w-full">
             <img
-              src={product?.image}
+              src={productImageUrl}
               alt={product?.name}
               className="rounded-md w-full h-auto"
             />
@@ -54,7 +56,7 @@ const SingleProduct = () => {
           <div className="md:w-1/2 w-full">
             <h3 className="text-2xl font-semibold mb-4">{product?.name}</h3>
             <p className="text-xl text-primary mb-4">
-              ${product?.price}
+              NPR {product?.price}
             </p>
             <p className="text-gray-400 mb-4">{product?.description}</p>
 

@@ -1,32 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation to access navigation state
-import productsData from "../../data/products.json";
+import { useLocation } from "react-router-dom";
+import { useFetchAllProductsQuery } from "../../redux/features/products/productsApi";
 import ProductCards from "../products/ProductCards";
 
 const Search = () => {
-  const location = useLocation(); // Get location object
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState(productsData);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  // Fetch all products from API
+  const { data: products, isLoading, error } = useFetchAllProductsQuery();
 
   // Get skin type label from location state if available
   const { skinTypeLabel } = location.state || {};
 
   useEffect(() => {
-    if (skinTypeLabel) {
-      // Set search query based on skin type label if provided
-      setSearchQuery(skinTypeLabel);
+    if (products) {
+      let filtered = products;
 
-      // Filter products based on skin type label if provided
-      const filteredBySkinType = productsData.filter(product =>
-        product.skin_type_suitability.toLowerCase().includes(skinTypeLabel.toLowerCase())
-      );
-      setFilteredProducts(filteredBySkinType);
+      // Filter by skin type if provided
+      if (skinTypeLabel) {
+        setSearchQuery(skinTypeLabel);
+        filtered = products.filter((product) =>
+          product.skin_type_suitability.toLowerCase().includes(skinTypeLabel.toLowerCase())
+        );
+      }
+
+      setFilteredProducts(filtered);
     }
-  }, [skinTypeLabel]); // Run this effect when skinTypeLabel changes
+  }, [products, skinTypeLabel]);
 
   const handleSearch = () => {
+    if (!products) return;
+
     const queryLowerCase = searchQuery.toLowerCase();
-    const filtered = productsData.filter(
+    const filtered = products.filter(
       (product) =>
         product.name.toLowerCase().includes(queryLowerCase) ||
         product.brand.toLowerCase().includes(queryLowerCase) ||
@@ -49,14 +57,14 @@ const Search = () => {
       <section className="section__container bg-primary-light">
         <h2 className="section__header capitalize">Search Products</h2>
       </section>
-      {/* Input field */}
+
       <section className="section__container">
         <div className="w-full mb-12 flex flex-col md:flex-row items-center justify-center gap-4">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown} 
+            onKeyDown={handleKeyDown}
             placeholder="Search for products..."
             className="search-bar w-full max-w-4xl p-2 border rounded"
           />
@@ -68,9 +76,15 @@ const Search = () => {
           </button>
         </div>
       </section>
-      {/* Products card */}
+
       <div className="section__container">
-        <ProductCards products={filteredProducts} />
+        {isLoading ? (
+          <p>Loading products...</p>
+        ) : error ? (
+          <p>Error fetching products.</p>
+        ) : (
+          <ProductCards products={filteredProducts} />
+        )}
       </div>
     </>
   );

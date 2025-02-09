@@ -29,16 +29,19 @@ app.use(
 // Import routes
 const productRoutes = require("./src/products/products.route");
 const orderRoutes = require("./src/orders/orders.route");
+const paymentRoutes = require("./src/orders/payment.route");
 const skinTest = require("./src/skinDetection/skinTest");
 
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 
 // Routes setup
 app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes); //this is the baseurl for products
 app.use("/api/skin", skinTest); // Linking the skinTest API route
+app.use("/api/payment", paymentRoutes); // Linking the payment
+
 
 
 // Sync database and start server

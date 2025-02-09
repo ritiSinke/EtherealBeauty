@@ -107,6 +107,30 @@ router.get("/test", (req, res) => {
 //   }
 // });
 
+// ✅ Get Orders by Customer ID
+router.get("/customer/:customerId", async (req, res) => {
+  const { customerId } = req.params;
+  console.log(`Fetching orders for customer: ${customerId}`);
+
+  try {
+    const orders = await Order.findAll({
+      where: { customer_id: customerId },
+      include: [
+        {
+          model: OrderItem,
+          as: "orderItems", // ✅ Add the alias to match the association
+        },
+      ],
+    });
+
+    res.json(orders);
+  } catch (error) {
+    //console.error("Error fetching customer orders:", error);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+
+
 router.get("/:id", authenticate, async (req, res) => {
   console.log("Fetching order with ID:", req.params.id);
   try {

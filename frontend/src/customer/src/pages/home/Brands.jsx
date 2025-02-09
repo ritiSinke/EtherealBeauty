@@ -1,16 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import category1 from "../../assets/category-1.jpg";
-import category2 from "../../assets/category-2.jpg";
-import category3 from "../../assets/category-3.jpg";
-import category4 from "../../assets/category-4.jpg";
+import ceta from "../../assets/ceta1.png";
+import mama from "../../assets/mama1.png";
+import aqua from "../../assets/aqua1.png";
+import derma from "../../assets/derma1.png";
 
 const Brands = () => {
   const Brands = [
-    { name: 'Cetaphil', path: 'cetaphil', image: category1 },
-    { name: 'Mamaearth', path: 'Mamaearth', image: category2 },
-    { name: 'Aqualogica', path: 'Aqualogica', image: category3 },
-    { name: 'DermaCo', path: 'DermaCo', image: category4 },
+    { name: 'Cetaphil', path: 'cetaphil', image: ceta },
+    { name: 'Mamaearth', path: 'Mamaearth', image: mama },
+    { name: 'Aqualogica', path: 'Aqualogica', image: aqua },
+    { name: 'DermaCo', path: 'DermaCo', image: derma },
   ];
 
   return (
